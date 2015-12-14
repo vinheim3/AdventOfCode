@@ -6,7 +6,7 @@ data=open("Advent13.txt").read()
 happiness=dict()
 people=set()
 
-m=re.compile("([a-zA-z]+) would (gain|lose) (\d+) happiness units by sitting next to ([a-zA-z]+)")
+m=re.compile("(\w+).*(gain|lose) (\d+).*\s(\w+)\.")
 
 for i in data.split("\n"):
     p = m.search(i)

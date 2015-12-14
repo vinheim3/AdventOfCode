@@ -1,8 +1,5 @@
 import hashlib
 
-with open("Advent4.txt") as myfile:
-    data=myfile.read()
-
 i=0
 while True:
     string="ckczppom{0}".format(i)
