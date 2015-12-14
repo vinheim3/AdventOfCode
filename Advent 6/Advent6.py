@@ -9,7 +9,7 @@ for i in range(0,1000):
     for j in range(0,1000):
         lights[i].append(0)
 
-m=re.compile(r"(turn on|turn off|toggle) ([0-9]+),([0-9]+) through ([0-9]+),([0-9]+)")
+m=re.compile(r"(turn on|turn off|toggle) (\d+),(\d+).*?(\d+),(\d+)")
 
 for i in data:
     instruction,x1,y1,x2,y2=m.match(i).groups()

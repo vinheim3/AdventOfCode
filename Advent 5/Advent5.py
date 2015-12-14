@@ -9,8 +9,8 @@ for i in data:
     doubleLetter=len(findall(r"(.)\1",i))
     badString=len(findall(r"ab|cd|pq|xy",i))
 
-    inBetween=len(findall(r"([a-z]).\1",i))
-    doublePairs=len(findall(r"([a-z][a-z]).*\1",i))
+    inBetween=len(findall(r"(\w).\1",i))
+    doublePairs=len(findall(r"(\w\w).*\1",i))
 
     if (currentVowelCount>=3 and doubleLetter and not badString):
         goodWords1+=1

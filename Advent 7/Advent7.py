@@ -1,45 +1,42 @@
-with open("Advent7_2.txt") as myfile:
-    data=[i.split('\n')[0] for i in myfile]
+data=open("Advent7_1.txt").read().split("\n")
 
-dataDict={}
-for line in data:
-    cmd,gate=line.split(" -> ")
-    dataDict[gate]=cmd
+lines=[]
 
-solved={}
-def get_value(key):
-    if key.isdigit():
-        return int(key)
-    elif key in solved:
-        return solved[key]
+for i in data:
+    lines.append([])
+    lines[len(lines)-1]=i.split()
 
-    cmd=dataDict[key].split(" ")
+while True:
+    solved={}
+    toDelete=[]
+    
+    for c,i in enumerate(lines):
+        oldSolved=len(solved)
+        if len(i)==3 and i[0].isdigit():
+            solved[i[2]]=i[0]
+        elif len(i)==4 and i[1].isdigit():
+            solved[i[3]]=str(65536+~int(i[1]))
+        elif len(i)==5 and i[0].isdigit() and i[2].isdigit():
+            if i[1]=="AND":
+                solved[i[4]]=str(int(i[0])&int(i[2]))
+            elif i[1]=="OR":
+                solved[i[4]]=str(int(i[0])|int(i[2]))
+            elif i[1]=="LSHIFT":
+                solved[i[4]]=str(int(i[0])<<int(i[2]))
+            elif i[1]=="RSHIFT":
+                solved[i[4]]=str(int(i[0])>>int(i[2]))
+        if len(solved)>oldSolved:
+            toDelete.append(c)
 
-    if "NOT" in cmd:
-        if cmd[1].isdigit() or (cmd[1] in solved):
-            solved[key]=~get_value(cmd[1])
-            return solved[key]
-        return ~get_value(cmd[1])
-    if "AND" in cmd:
-        if (cmd[0].isdigit() or cmd[0] in solved) and (cmd[2].isdigit() or cmd[2] in solved):
-            solved[key]=get_value(cmd[0]) & get_value(cmd[2])
-            return solved[key]
-        return get_value(cmd[0]) & get_value(cmd[2])
-    if "OR" in cmd:
-        if (cmd[0].isdigit() or cmd[0] in solved) and (cmd[2].isdigit() or cmd[2] in solved):
-            solved[key]=get_value(cmd[0]) | get_value(cmd[2])
-            return solved[key]
-        return get_value(cmd[0]) | get_value(cmd[2])
-    if "LSHIFT" in cmd:
-        if (cmd[0].isdigit() or cmd[0] in solved) and (cmd[2].isdigit() or cmd[2] in solved):
-            solved[key]=get_value(cmd[0]) << get_value(cmd[2])
-            return solved[key]
-        return get_value(cmd[0]) << get_value(cmd[2])
-    if "RSHIFT" in cmd:
-        if (cmd[0].isdigit() or cmd[0] in solved) and (cmd[2].isdigit() or cmd[2] in solved):
-            solved[key]=get_value(cmd[0]) >> get_value(cmd[2])
-            return solved[key]
-        return get_value(cmd[0]) >> get_value(cmd[2])
-    solved[key]=get_value(cmd[0])
-    return solved[key]
-print get_value("a")
+    if "a" in solved:
+        print solved["a"]
+        break
+    
+    while len(toDelete)>0:
+        i=toDelete.pop()
+        del lines[i]
+    
+    for a,i in enumerate(lines):
+        for b,j in enumerate(i):
+            if j in solved:
+                lines[a][b]=solved[j]
