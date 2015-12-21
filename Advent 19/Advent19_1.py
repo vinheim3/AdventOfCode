@@ -1,4 +1,4 @@
-import copy
+from copy import deepcopy
 data=open("Advent19.txt").read().split("\n")
 
 lines=[]
@@ -10,17 +10,11 @@ string=data[-1]
 for c,i in enumerate(lines):
     currStr=[]
     for d,j in enumerate(string):
-        if len(i[0])==1:
-            if i[0]==j:
-                newStr=copy.deepcopy(currStr)
-                newStr.append(i[1])
-                newStr.append(string[d+1:])
-                strings.add("".join(copy.deepcopy(newStr)))
-        elif len(i[0])==2 and d!=len(string)-1:
-            if i[0]==string[d]+string[d+1]:
-                newStr=copy.deepcopy(currStr)
-                newStr.append(i[1])
-                newStr.append(string[d+2:])
-                strings.add("".join(copy.deepcopy(newStr)))
+        p=len(i[0])
+        if d!=len(string)-(p-1) and i[0]==string[d:d+p]:
+            newStr=deepcopy(currStr)
+            newStr.append(i[1])
+            newStr.append(string[d+p:])
+            strings.add("".join(deepcopy(newStr)))
         currStr.append(j)
 print len(strings)
