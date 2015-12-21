@@ -1,43 +1,28 @@
-w=[[8,4,0],[10,5,0],[25,6,0],[40,7,0],[74,8,0]]
+from itertools import product
 
-a=[[0,0,0],[13,0,1],[31,0,2],[53,0,3],[75,0,4],[102,0,5]]
-
-r=[[0,0,0],[0,0,0],
-   [25,1,0],[50,2,0],[100,3,0],
-   [20,0,1],[40,0,2],[80,0,3]]
+data=list(i.split() for i in open("Advent21.txt").read().split("\n"))
+a,r=[[0,0,0]],[[0,0,0],[0,0,0]]
+w=list(list(int(j) for j in i[1:]) for i in data[1:6])
+a.extend(list(list(int(j) for j in i[1:]) for i in data[8:13]))
+r.extend(list(list(int(j) for j in i[2:]) for i in data[15:21]))
 
 def fight(myDam, myArm):
-    turn=1
-    myHP=100
-    hisHP=104
-    hisDam=8
-    hisArm=1
-    
-    while True:
-        if turn==1:
-            hisHP-=max(myDam-hisArm,1)
-        elif turn==0:
-            myHP-=max(hisDam-myArm,1)
-        turn=1-turn
-        if min(hisHP,myHP)<=0:
-            return hisHP<=0
+    myHP,hisHP,hisDam,hisArm=100,104,8,1
+    myTDam,hisTDam=max(myDam-hisArm,1),max(hisDam-myArm,1)
+    myHits=hisHP/myTDam+(hisHP%myTDam>0)
+    hisHits=myHP/hisTDam+(myHP%hisTDam>0)
+    return myHits<=hisHits
 
-minCost=9999
-maxCost=0
+minCost,maxCost=9999,0
 
-for i in range(len(w)):
-    for j in range(len(a)):
-        for k in range(len(r)):
-            for l in range(len(r)):
-                if k!=l:
-                    currCost=w[i][0]+a[j][0]+r[k][0]+r[l][0]
-                    currDam=w[i][1]+r[k][1]+r[l][1]
-                    currArm=a[j][2]+r[k][2]+r[l][2]
-                    
-                    if fight(currDam, currArm):
-                        minCost=min(minCost,currCost)
-                    else:
-                        maxCost=max(maxCost,currCost)
+for i in product(range(len(w)),range(len(a)),range(len(r)),range(len(r))):
+    if i[2]!=i[3]:
+        currCost,currDam,currArm=(sum(m[n] for m in (w[i[0]],a[i[1]],r[i[2]],r[i[3]])) for n in range(3))
 
-print minCost
-print maxCost
+        if fight(currDam, currArm):
+            minCost=min(minCost,currCost)
+        else:
+            maxCost=max(maxCost,currCost)
+
+print "Minimum cost to win: "+str(minCost)
+print "Maximum cost to still lose: "+str(maxCost)
