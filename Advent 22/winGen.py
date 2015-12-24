@@ -1,6 +1,7 @@
 #winGen.py bossHP bossDamage
 import sys,copy
 hisHP,hisDam=int(sys.argv[1]),int(sys.argv[2])
+hisRDam=max(hisDam-7,1)
 
 def applyEffects(pT,rT,sT,hisHP,myMana):
     if pT>0:
@@ -14,7 +15,7 @@ def applyEffects(pT,rT,sT,hisHP,myMana):
     return list([pT,rT,sT,hisHP,myMana])
 
 def simulate(*args):
-    global minMana,hisDam,x,y
+    global minMana,hisDam,x,y,hisRDam
     for i in range(5):
         manaCost,myHP,myMana,hisHP,sT,pT,rT,part2,seq=args[1:]
 
@@ -50,12 +51,14 @@ def simulate(*args):
 
         myMana-=cm
         manaCost+=cm
-        if manaCost>minMana:
+        if not seq and manaCost>=minMana:
+            continue
+        if seq and manaCost>minMana:
             continue
 
         pT,rT,sT,hisHP,myMana=applyEffects(pT,rT,sT,hisHP,myMana)
 
-        myHP-=hisDam-((sT>0)*7)
+        myHP-=(hisDam,hisRDam)[sT>0]
         
         if hisHP<=0:
             if seq:

@@ -1,5 +1,6 @@
 import sys
-hisHP,hisDam=int(sys.argv[1]),int(sys.argv[2])
+hisHP,hisDam,part2=list(int(i) for i in sys.argv[1:])
+hisRDam=max(hisDam-7,1)
 
 def applyEffects(pT,rT,sT,hisHP,myMana):
     if pT>0:
@@ -13,7 +14,7 @@ def applyEffects(pT,rT,sT,hisHP,myMana):
     return list([pT,rT,sT,hisHP,myMana])
 
 def simulate(*args):
-    global minMana,hisDam
+    global minMana,hisDam,hisRDam
     for i in range(5):
         manaCost,myHP,myMana,hisHP,sT,pT,rT,part2=args
         
@@ -49,7 +50,7 @@ def simulate(*args):
 
         pT,rT,sT,hisHP,myMana=applyEffects(pT,rT,sT,hisHP,myMana)
 
-        myHP-=hisDam-((sT>0)*7)
+        myHP-=(hisDam,hisRDam)[sT>0]
         
         if hisHP<=0:
             minMana=min(minMana,manaCost)
@@ -59,10 +60,7 @@ def simulate(*args):
 
         simulate(manaCost,myHP,myMana,hisHP,sT,pT,rT,part2)
 
+#last param is False for part 1 and True for part 2
 minMana=9999
-simulate(0,50,500,hisHP,0,0,0,False)
-print minMana
-
-minMana=9999
-simulate(0,50,500,hisHP,0,0,0,True)
+simulate(0,50,500,hisHP,0,0,0,part2)
 print minMana

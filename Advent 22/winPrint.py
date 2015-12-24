@@ -2,6 +2,7 @@
 import sys
 data,part=sys.argv[3:]
 myHP,myMana,hisHP,hisDam,sT,pT,rT=50,500,int(sys.argv[1]),int(sys.argv[2]),0,0,0
+max1=hisDam<=7
 
 def printTurn(player):
     global myHP,sT,myMana,hisHP
@@ -19,7 +20,7 @@ def applyEffects():
     if pT>0:
         pT-=1
         hisHP-=3
-        print "Poison deals 3 damage"+("; its timer is now "+str(pT)+".",". This kills the boss, and the player wins.")[hisHP<=0]
+        print "Poison deals 3 damage"+(". This kills the boss, and the player wins.","; its timer is now "+str(pT)+".")[hisHP>0]
         if hisHP<=0:
             sys.exit()
         if pT==0:
@@ -68,4 +69,4 @@ for i in data:
     printTurn("Boss")
     applyEffects()
     myHP-=hisDam-((sT>0)*7)
-    print "Boss attacks for "+str(hisDam)+(""," - 7 = "+str(max(hisDam-7,1)))[sT>0]+" damage!\n"
+    print "Boss attacks for "+str(hisDam)+(""," - 7 ="+("",">")[max1]+" "+str(max(hisDam-7,1)))[sT>0]+" damage!\n"
