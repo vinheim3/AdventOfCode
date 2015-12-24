@@ -1,10 +1,13 @@
-data=open("Advent7_1.txt").read().split("\n")
+data=open("Advent7.txt").read().split("\n")
 
 lines=[]
 
 for i in data:
     lines.append([])
     lines[len(lines)-1]=i.split()
+
+#lines.append(["19138","->","b"])
+lines.append(["16076","->","b"])
 
 while True:
     solved={}

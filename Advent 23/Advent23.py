@@ -1,5 +1,6 @@
 data=list(i.split() for i in open("Advent23.txt").read().split("\n"))
 
+#a is 0 in part 1, 1 in part 2
 d={"a":0,"b":0}
 i=0
 

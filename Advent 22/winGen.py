@@ -1,4 +1,5 @@
-import sys
+#winGen.py bossHP bossDamage
+import sys,copy
 hisHP,hisDam=int(sys.argv[1]),int(sys.argv[2])
 
 def applyEffects(pT,rT,sT,hisHP,myMana):
@@ -13,9 +14,14 @@ def applyEffects(pT,rT,sT,hisHP,myMana):
     return list([pT,rT,sT,hisHP,myMana])
 
 def simulate(*args):
-    global minMana,hisDam
+    global minMana,hisDam,x,y
     for i in range(5):
-        manaCost,myHP,myMana,hisHP,sT,pT,rT,part2=args
+        manaCost,myHP,myMana,hisHP,sT,pT,rT,part2,seq=args[1:]
+
+        L=[]
+        if seq:
+            L=copy.deepcopy(args[0])
+            L.append(i)
         
         pT,rT,sT,hisHP,myMana=applyEffects(pT,rT,sT,hisHP,myMana)
 
@@ -44,7 +50,7 @@ def simulate(*args):
 
         myMana-=cm
         manaCost+=cm
-        if manaCost>=minMana:
+        if manaCost>minMana:
             continue
 
         pT,rT,sT,hisHP,myMana=applyEffects(pT,rT,sT,hisHP,myMana)
@@ -52,17 +58,28 @@ def simulate(*args):
         myHP-=hisDam-((sT>0)*7)
         
         if hisHP<=0:
+            if seq:
+                if not part2 and manaCost==x:
+                    print "".join(list(str(i) for i in L))
+                if part2 and manaCost==y:
+                    print "".join(list(str(i) for i in L))
             minMana=min(minMana,manaCost)
             continue
         elif myHP<=0:
             continue
 
-        simulate(manaCost,myHP,myMana,hisHP,sT,pT,rT,part2)
+        simulate(L,manaCost,myHP,myMana,hisHP,sT,pT,rT,part2,seq)
 
 minMana=9999
-simulate(0,50,500,hisHP,0,0,0,False)
-print minMana
+simulate([],0,50,500,hisHP,0,0,0,False,False)
+x=minMana
+print "Part 1 solution - "+str(x)+"\nMove sequences for \"winPrint.py "+str(hisHP)+" "+str(hisDam)+" moveSequence 1\":"
+minMana=9999
+simulate([],0,50,500,hisHP,0,0,0,False,True)
 
 minMana=9999
-simulate(0,50,500,hisHP,0,0,0,True)
-print minMana
+simulate([],0,50,500,hisHP,0,0,0,True,False)
+y=minMana
+print "\nPart 2 solution - "+str(y)+"\nMove sequences for \"winPrint.py "+str(hisHP)+" "+str(hisDam)+" moveSequence 2\":"
+minMana=9999
+simulate([],0,50,500,hisHP,0,0,0,True,True)
