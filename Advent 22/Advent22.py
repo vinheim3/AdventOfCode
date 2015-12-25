@@ -1,4 +1,5 @@
 import sys
+#advent22.py bossHP bossDamage part1or2 - 0 for 1, anything else for 2
 hisHP,hisDam,part2=list(int(i) for i in sys.argv[1:])
 hisRDam=max(hisDam-7,1)
 

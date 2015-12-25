@@ -1,88 +1,90 @@
 #winGen.py bossHP bossDamage
-import sys,copy
-hisHP,hisDam=int(sys.argv[1]),int(sys.argv[2])
-hisRDam=max(hisDam-7,1)
+import sys,copy,itertools
+bossHP,bossDamage=int(sys.argv[1]),int(sys.argv[2])
+bossReducedDamage=max(bossDamage-7,1)
+moveSequence=[]
 
-def applyEffects(pT,rT,sT,hisHP,myMana):
-    if pT>0:
-        pT-=1
-        hisHP-=3
-    if rT>0:
-        rT-=1
+def applyEffects(poisonTimer,rechargeTimer,shieldTimer,bossHP,myMana):
+    if poisonTimer>0:
+        poisonTimer-=1
+        bossHP-=3
+        
+    if rechargeTimer>0:
+        rechargeTimer-=1
         myMana+=101
-    if sT>0:
-        sT-=1
-    return list([pT,rT,sT,hisHP,myMana])
+        
+    if shieldTimer>0:
+        shieldTimer-=1
+        
+    return list([poisonTimer,rechargeTimer,shieldTimer,bossHP,myMana])
 
 def simulate(*args):
-    global minMana,hisDam,x,y,hisRDam
+    global minMana,bossDamage,bossReducedDamage,moveSequence,part1
+    
     for i in range(5):
-        manaCost,myHP,myMana,hisHP,sT,pT,rT,part2,seq=args[1:]
-
-        L=[]
-        if seq:
-            L=copy.deepcopy(args[0])
-            L.append(i)
+        manaCost,myHP,myMana,bossHP,shieldTimer, \
+            poisonTimer,rechargeTimer=args
         
-        pT,rT,sT,hisHP,myMana=applyEffects(pT,rT,sT,hisHP,myMana)
+        poisonTimer,rechargeTimer,shieldTimer,bossHP,myMana= \
+            applyEffects(poisonTimer,rechargeTimer,shieldTimer,bossHP,myMana)
 
-        if part2:
+        if not part1:
             myHP-=1
             if myHP<=0:
                continue
         
-        cm=(53,73,113,173,229)[i]
-        cond=(0,0,sT,pT,rT)[i]
+        currentSpellMana=(53,73,113,173,229)[i]
+        currentSpellTimer=(0,0,shieldTimer,poisonTimer,rechargeTimer)[i]
         
-        if myMana<cm or cond!=0:
+        if myMana<currentSpellMana or currentSpellTimer!=0:
             continue
 
         if i==0:
-            hisHP-=4
+            bossHP-=4
         elif i==1:
-            hisHP-=2
+            bossHP-=2
             myHP+=2
         elif i==2:
-            sT=6
+            shieldTimer=6
         elif i==3:
-            pT=6
+            poisonTimer=6
         elif i==4:
-            rT=5
+            rechargeTimer=5
 
-        myMana-=cm
-        manaCost+=cm
-        if not seq and manaCost>=minMana:
-            continue
-        if seq and manaCost>minMana:
-            continue
-
-        pT,rT,sT,hisHP,myMana=applyEffects(pT,rT,sT,hisHP,myMana)
-
-        myHP-=(hisDam,hisRDam)[sT>0]
+        myMana-=currentSpellMana
+        manaCost+=currentSpellMana
         
-        if hisHP<=0:
-            if seq:
-                if not part2 and manaCost==x:
-                    print "".join(list(str(i) for i in L))
-                if part2 and manaCost==y:
-                    print "".join(list(str(i) for i in L))
+        if manaCost>minMana:
+            continue
+
+        poisonTimer,rechargeTimer,shieldTimer,bossHP,myMana= \
+            applyEffects(poisonTimer,rechargeTimer,shieldTimer,bossHP,myMana)
+
+        myHP-=(bossDamage,bossReducedDamage)[shieldTimer>0]
+
+        if bossHP<=0:
+            if part1:
+                winners.append(("".join(list(str(j) for j in moveSequence))+str(i),manaCost))
+            else:
+                winners.append(("".join(list(str(j) for j in moveSequence))+str(i),manaCost))
+            
             minMana=min(minMana,manaCost)
             continue
         elif myHP<=0:
             continue
 
-        simulate(L,manaCost,myHP,myMana,hisHP,sT,pT,rT,part2,seq)
+        moveSequence.append(i)
+        simulate(manaCost,myHP,myMana,bossHP,shieldTimer,poisonTimer,rechargeTimer)
+        moveSequence.pop()
 
-minMana=9999
-simulate([],0,50,500,hisHP,0,0,0,False,False)
-x=minMana
-print "Part 1 solution - "+str(x)+"\nMove sequences for \"winPrint.py "+str(hisHP)+" "+str(hisDam)+" moveSequence 1\":"
-minMana=9999
-simulate([],0,50,500,hisHP,0,0,0,False,True)
+winners,minMana,part1=[],sys.maxint,True
+simulate(0,50,500,bossHP,0,0,0)
+print "Part 1 solution - "+str(minMana)+"\nMove sequences for \"winPrint.py "+str(bossHP)+" "+str(bossDamage)+" moveSequence 1\":"
+for i in itertools.ifilter(lambda x: x[1]==minMana,winners):
+    print i[0]
 
-minMana=9999
-simulate([],0,50,500,hisHP,0,0,0,True,False)
-y=minMana
-print "\nPart 2 solution - "+str(y)+"\nMove sequences for \"winPrint.py "+str(hisHP)+" "+str(hisDam)+" moveSequence 2\":"
-minMana=9999
-simulate([],0,50,500,hisHP,0,0,0,True,True)
+winners,minMana,part1=[],sys.maxint,False
+simulate(0,50,500,bossHP,0,0,0)
+print "\nPart 2 solution - "+str(minMana)+"\nMove sequences for \"winPrint.py "+str(bossHP)+" "+str(bossDamage)+" moveSequence 2\":"
+for i in itertools.ifilter(lambda x: x[1]==minMana,winners):
+    print i[0]
